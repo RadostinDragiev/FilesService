@@ -21,7 +21,7 @@ public class RoomPhotoController {
     private final RoomPhotoService roomPhotoService;
 
     @PostMapping(value = "/upload-photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<List<RoomPhotoDto>> uploadFile(@ModelAttribute UploadPhotoDto uploadPhotoDto) {
+    public ResponseEntity<List<RoomPhotoDto>> uploadPhotos(@ModelAttribute UploadPhotoDto uploadPhotoDto) {
         log.info("Upload room photo triggered");
         List<RoomPhotoDto> roomPhotos = this.roomPhotoService.uploadPhoto(uploadPhotoDto);
 

@@ -1,6 +1,5 @@
 package com.filesservice.service.impl;
 
-import com.filesservice.model.dto.request.UploadPhotoDto;
 import com.filesservice.model.dto.response.RoomPhotoDto;
 import com.filesservice.model.entity.RoomPhoto;
 import com.filesservice.repository.RoomPhotoRepository;
@@ -27,16 +26,15 @@ public class RoomPhotoServiceImpl implements RoomPhotoService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<RoomPhotoDto> uploadPhoto(UploadPhotoDto uploadPhotoDto) {
+    public List<RoomPhotoDto> uploadImages(String roomId, List<MultipartFile> images) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         List<RoomPhoto> roomPhotos = new ArrayList<>();
-        for (MultipartFile file : uploadPhotoDto.getFiles()) {
-            Map<String, String> uploadedFile = this.cloudinaryService.uploadFile(file, "");
+        for (MultipartFile image : images) {
+            Map<String, String> uploadedFile = this.cloudinaryService.uploadFile(image, "");
 
             roomPhotos.add(RoomPhoto.builder()
-                    .roomId(uploadPhotoDto.getRoomId())
-                    .roomTypeId(uploadPhotoDto.getRoomTypeId())
+                    .roomId(roomId)
                     .publicId(uploadedFile.get("public_id"))
                     .secureUrl(uploadedFile.get("secure_url"))
                     .createdBy(auth.getName())
@@ -58,14 +56,6 @@ public class RoomPhotoServiceImpl implements RoomPhotoService {
     }
 
     @Override
-    public List<RoomPhotoDto> getAllRoomPhotosByRoomTypeId(String roomTypeId) {
-        return this.roomPhotoRepository.getAllByRoomTypeId(roomTypeId)
-                .stream()
-                .map(photo -> this.modelMapper.map(photo, RoomPhotoDto.class))
-                .toList();
-    }
-
-    @Override
     public void deletePhoto(String publicId) {
         this.cloudinaryService.deleteFile(publicId);
         this.roomPhotoRepository.deleteByPublicId(publicId);
@@ -79,15 +69,5 @@ public class RoomPhotoServiceImpl implements RoomPhotoService {
 
         this.cloudinaryService.deleteFiles(publicIds);
         this.roomPhotoRepository.deleteAllByRoomId(roomId);
-    }
-
-    @Override
-    public void deleteAllByRoomType(String roomTypeId) {
-        List<String> publicIds = this.roomPhotoRepository.getAllByRoomTypeId(roomTypeId).stream()
-                .map(RoomPhoto::getPublicId)
-                .toList();
-
-        this.cloudinaryService.deleteFiles(publicIds);
-        this.roomPhotoRepository.deleteAllByRoomTypeId(roomTypeId);
     }
 }

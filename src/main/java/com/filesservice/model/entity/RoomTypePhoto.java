@@ -8,16 +8,16 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "rooms_photos")
+@Table(name = "room_types_photos")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoomPhoto extends BaseUUIDEntity {
+public class RoomTypePhoto extends BaseUUIDEntity {
 
-    @Column(name = "room_id", nullable = false)
-    private String roomId;
+    @Column(name = "room_type_id", nullable = false)
+    private String roomTypeId;
 
     @Column(name = "public_id", nullable = false, unique = true)
     private String publicId;

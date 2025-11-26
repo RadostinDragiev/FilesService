@@ -1,6 +1,5 @@
 package com.filesservice.web;
 
-import com.filesservice.model.dto.request.UploadPhotoDto;
 import com.filesservice.model.dto.response.RoomPhotoDto;
 import com.filesservice.service.RoomPhotoService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,10 +20,10 @@ public class RoomPhotoController {
 
     private final RoomPhotoService roomPhotoService;
 
-    @PostMapping(value = "/upload-photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<List<RoomPhotoDto>> uploadPhotos(@ModelAttribute UploadPhotoDto uploadPhotoDto) {
+    @PostMapping(value = "/{roomId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<List<RoomPhotoDto>> uploadPhotos(@PathVariable String roomId, @RequestPart List<MultipartFile> images) {
         log.info("Upload room photo triggered");
-        List<RoomPhotoDto> roomPhotos = this.roomPhotoService.uploadPhoto(uploadPhotoDto);
+        List<RoomPhotoDto> roomPhotos = this.roomPhotoService.uploadImages(roomId, images);
 
         return ResponseEntity.ok(roomPhotos);
     }
@@ -34,14 +34,6 @@ public class RoomPhotoController {
         List<RoomPhotoDto> roomPhotosByRoomId = this.roomPhotoService.getAllRoomPhotosByRoomId(roomId);
 
         return ResponseEntity.ok(roomPhotosByRoomId);
-    }
-
-    @GetMapping("/room-type/{roomTypeId}")
-    public ResponseEntity<List<RoomPhotoDto>> getPhotosByRoomType(@PathVariable String roomTypeId) {
-        log.info("Get all room photos for room type id: {}", roomTypeId);
-        List<RoomPhotoDto> roomPhotos = this.roomPhotoService.getAllRoomPhotosByRoomTypeId(roomTypeId);
-
-        return ResponseEntity.ok(roomPhotos);
     }
 
     @DeleteMapping("/{publicId}")
@@ -56,14 +48,6 @@ public class RoomPhotoController {
     public ResponseEntity<Void> deletePhotoByRoom(@PathVariable String roomId) {
         log.info("Delete photos with room id: {}", roomId);
         this.roomPhotoService.deleteAllByRoom(roomId);
-
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/room-type/{roomTypeId}")
-    public ResponseEntity<Void> deletePhotoByRoomType(@PathVariable String roomTypeId) {
-        log.info("Delete photos with room type id: {}", roomTypeId);
-        this.roomPhotoService.deleteAllByRoomType(roomTypeId);
 
         return ResponseEntity.ok().build();
     }

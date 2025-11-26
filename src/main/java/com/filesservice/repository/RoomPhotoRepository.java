@@ -14,8 +14,6 @@ public interface RoomPhotoRepository extends JpaRepository<RoomPhoto, UUID> {
 
     List<RoomPhoto> getAllByRoomId(String roomId);
 
-    List<RoomPhoto> getAllByRoomTypeId(String roomTypeId);
-
     @Modifying
     @Transactional
     void deleteByPublicId(String publicId);
@@ -23,8 +21,4 @@ public interface RoomPhotoRepository extends JpaRepository<RoomPhoto, UUID> {
     @Modifying
     @Transactional
     void deleteAllByRoomId(String roomId);
-
-    @Modifying
-    @Transactional
-    void deleteAllByRoomTypeId(String roomTypeId);
 }
